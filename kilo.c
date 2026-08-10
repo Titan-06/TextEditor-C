@@ -6,6 +6,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 
 /* Data */
 struct editorConfig
@@ -120,27 +121,56 @@ void editorProcessKeyPress()
     }
 }
 
+/* Append Buffer */
+struct abuf
+{
+    char *b;
+    int len;
+};
+
+#define ABUF_INIT {NULL, 0}
+
+void abAppend(struct abuf *ab, char *s, int length)
+{
+    char *new = realloc(ab->b, ab->len + length);
+    if (new == NULL)
+        return;
+    memcpy(&new[ab->len], s, length);
+    ab->b = new;
+    ab->len += length;
+}
+
+void abFree(struct abuf *ab)
+{
+    free(ab->b);
+}
+
 /* Handles Output */
-void editorDrawRows()
+void editorDrawRows(struct abuf *ab)
 {
     for (int i = 0; i < E.screenRows; i++)
     {
-        write(STDOUT_FILENO, "~", 1);
+        abAppend(ab, "~", 1);
+        abAppend(ab, "\x1b[K", 3);
         if (i < E.screenRows - 1)
         {
-            write(STDOUT_FILENO, "\r\n", 2);
+            abAppend(ab, "\r\n", 2);
         }
     }
 }
 
 void editorRefreshScreen()
 {
-    write(STDOUT_FILENO, "\x1b[2J", 4);
-    write(STDOUT_FILENO, "\x1b[H", 3);
+    struct abuf ab = ABUF_INIT;
+    abAppend(&ab, "\x1b[?25l", 6);
+    abAppend(&ab, "\x1b[H", 3);
 
-    editorDrawRows();
+    editorDrawRows(&ab);
 
-    write(STDOUT_FILENO, "\x1b[H", 3);
+    abAppend(&ab, "\x1b[H", 3);
+    abAppend(&ab, "\x1b[?25h", 6);
+    write(STDIN_FILENO, ab.b, ab.len);
+    abFree(&ab);
 }
 
 /* Init */
