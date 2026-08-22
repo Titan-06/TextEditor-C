@@ -70,8 +70,8 @@ char *C_HL_KEYWORDS[] = {
     "switch", "if", "while", "for", "break", "continue", "return", "else",
     "struct", "union", "typedef", "static", "enum", "class", "case",
 
-    "int |", "long |", "double |", "float |", "char |", "unsigned |", "signed |",
-    "void |", NULL};
+    "int|", "long|", "double|", "float|", "char|", "unsigned|", "signed|",
+    "void|", NULL};
 
 struct editorSyntax HLDB[] = {
     {"c", C_HL_extensions, C_HL_KEYWORDS, "//", "/*", "*/", HL_HIGHLIGHT_NUMBER | HL_HIGHLIGHT_STRING},
