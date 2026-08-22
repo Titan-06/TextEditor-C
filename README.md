@@ -1,2 +1,3 @@
 # TextEditor-C
-Making a simple text editor in pure C without external libraries ( In Progress....)
+A clone of the kilo text editor made with the help of Snaptoken's Tutorial
+## https://viewsourcecode.org/snaptoken/kilo/
